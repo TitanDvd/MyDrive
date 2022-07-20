@@ -1,0 +1,21 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyDrive"
+        xmlns:Controls="clr-namespace:MyDrive.Controls" x:Class="MyDrive.MainWindow"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        Opacity="1"
+        Title="MainWindow"
+        ResizeMode="CanResize"
+        SizeToContent="WidthAndHeight"
+        Background="#3F000000"
+        Topmost="True"
+        ShowInTaskbar="False"
+        AllowsTransparency="True"
+        Padding="4">
+    <WrapPanel Width="Auto" Height="Auto" Name="DriveControlContainer" Margin="14" SnapsToDevicePixels="True"  />
+
+</Window>
