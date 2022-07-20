@@ -83,7 +83,7 @@ namespace MyDrive
                 {
                     ShowIfSlideFromLeft(x, y);
                     ShowIfSlideFromRight(x, y);
-                    HideWindowIfMouseLef(y);
+                    HideWindowIfMouseLeft(y);
                 }
             }));
 
@@ -95,6 +95,7 @@ namespace MyDrive
         {
             Activate();
             is00 = false;
+            is0M = false;
 
             dblanim.To = 0;
             dblanim.Duration = TimeSpan.FromMilliseconds(300);
@@ -154,7 +155,7 @@ namespace MyDrive
 
 
 
-        private void HideWindowIfMouseLef(int y)
+        private void HideWindowIfMouseLeft(int y)
         {
             if (y >= Height + 100)
             {
