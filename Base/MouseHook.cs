@@ -13,7 +13,7 @@ namespace NetDrive.Base
     {
         private const int WH_MOUSE_LL = 14;
         private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
-        private static LowLevelMouseProc callback;
+        private static LowLevelMouseProc _callback;
         private IntPtr _hookId = IntPtr.Zero;
 
         public delegate void MouseMove(int x, int y);
@@ -24,22 +24,13 @@ namespace NetDrive.Base
         public event MouseClick OnMouseClick;
 
 
-        public MouseHook()
-        {
-            callback = HookCallback;
-        }
+        public MouseHook() => _callback = HookCallback;
 
 
-        public void Hook()
-        {
-            _hookId = SetHook(callback);
-        }
+        public void Hook() =>_hookId = SetHook(_callback);
 
 
-        public void UnHook()
-        {
-            UnhookWindowsHookEx(_hookId);
-        }
+        public void UnHook() => UnhookWindowsHookEx(_hookId);
 
 
         private IntPtr SetHook(LowLevelMouseProc callback)

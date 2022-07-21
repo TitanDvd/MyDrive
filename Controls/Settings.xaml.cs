@@ -71,7 +71,6 @@ namespace MyDrive.Controls
                 var deviceUI = new DeviceControlUI(eai);
                 deviceUI.OnDeleteItemClick += (e) =>
                 {
-                    MainWindow.mHook.UnHook();
                     _devicesContainer.Children.Remove(e);
                     Options.EasyAccessItems.AccessItems.Remove(e.EasyAccessItem);
                     Options.SaveSettings(Options.EasyAccessItems);

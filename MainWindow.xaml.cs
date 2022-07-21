@@ -18,17 +18,44 @@ namespace MyDrive
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        /// <summary>
+        /// Global Mouse Hook Helper using Kernel32 Interop
+        /// </summary>
         public static MouseHook mHook;
+
 
         private NotifyIcon _notifyIcon;
         private DoubleAnimation dblanim;
+        private Action<int,int> _mouseMove;
+
+        /// <summary>
+        /// Indicates that window has been shown for the very first time
+        /// </summary>
         private bool _shown;
-        private bool is00;
-        private bool is0M;
+
+        /// <summary>
+        /// Is mouse pointer in 0,0 (Left Top Corner)
+        /// </summary>
+        private bool is00LC;
+
+        /// <summary>
+        /// Is mouse pointer in 0,Maximum Screen Width (Right Top Corner) 
+        /// </summary>
+        private bool is0MRC;
+
+        /// <summary>
+        /// Indicate if form has been shown by user sliding pointer from corners or click interaction
+        /// </summary>
+        private bool _shownFromCornerSlideOrClick;
+
 
         public MainWindow()
         {
             InitializeComponent();
+
+            // Setted far from top
+            Top = -300;
 
             dblanim = new DoubleAnimation();
             _notifyIcon = new NotifyIcon();
@@ -37,6 +64,19 @@ namespace MyDrive
             _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Opciones", null, new EventHandler(Settings)));
             _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Salir", null, new EventHandler(CloseWindow)));
             _notifyIcon.Visible = true;
+
+            _mouseMove = new Action<int,int>((x,y) =>
+            {
+                if (Options.Generals.ShowOnTopMouseSlide)
+                {
+                    if (!_shownFromCornerSlideOrClick)
+                    {
+                        if (ShowIfSlideFromLeft(x, y) || ShowIfSlideFromRight(x, y))
+                            ShowDockWindow();
+                    }
+                    HideWindowIfMouseLeft(y);
+                }
+            });
 
             Loaded += MainWindow_Loaded;
 
@@ -50,52 +90,29 @@ namespace MyDrive
         private void MHook_OnMouseClick(int x, int y)
         {
             if (Options.Generals.ShowOnTopClick)
-            {
                 if (y <= 0)
-                {
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        Activate();
-
-                        dblanim.To = 0;
-                        dblanim.Duration = TimeSpan.FromMilliseconds(300);
-                        this.BeginAnimation(TopProperty, dblanim);
-
-                        dblanim.From = 0;
-                        dblanim.To = 1;
-                        dblanim.Duration = TimeSpan.FromMilliseconds(100);
-                        this.BeginAnimation(OpacityProperty, dblanim);
-
-                        if (Options.Generals.UpdateAtShown)
-                            foreach (DriveUIControl item in DriveControlContainer.Children)
-                                item.GetSpaceInfo();
+                        ShowDockWindow();
                     }));
-                }
-            }
         }
+
 
 
         private void MHook_OnMouseMove(int x, int y)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                if (Options.Generals.ShowOnTopMouseSlide)
-                {
-                    ShowIfSlideFromLeft(x, y);
-                    ShowIfSlideFromRight(x, y);
-                    HideWindowIfMouseLeft(y);
-                }
-            }));
-
+            Dispatcher.BeginInvoke(_mouseMove, x, y);
         }
 
 
 
         private void ShowDockWindow()
         {
+            if (Options.Generals.UpdateAtShown)
+                foreach (DriveUIControl item in DriveControlContainer.Children)
+                    item.GetSpaceInfo();
+
             Activate();
-            is00 = false;
-            is0M = false;
 
             dblanim.To = 0;
             dblanim.Duration = TimeSpan.FromMilliseconds(300);
@@ -109,48 +126,40 @@ namespace MyDrive
 
 
 
-        private void ShowIfSlideFromLeft(int x, int y)
+        private bool ShowIfSlideFromLeft(int x, int y)
         {
-            if (x <= 0 && y <= 0 && is00 == false)
-                is00 = true;
+            if (x <= 0 && y <= 0 && is00LC == false)
+                is00LC = true;
 
-            if (is00)
-            {
-                if (x >= Screen.PrimaryScreen.WorkingArea.Width * 0.15 && y <= 0)
-                {
-                    ShowDockWindow();
+            // With this, if Y axis is higher than 25 pixels before windows is shown
+            // Prevent the window show animation when x >= Screen.PrimaryScreen.WorkingArea.Width * 0.15 && !_shownFromL2R
+            if (y > 25)
+                is00LC = false;
 
-                    if (Options.Generals.UpdateAtShown)
-                        foreach (DriveUIControl item in DriveControlContainer.Children)
-                            item.GetSpaceInfo();
-                }
+            if (is00LC)
+                if (x >= Screen.PrimaryScreen.WorkingArea.Width * 0.15 && !_shownFromCornerSlideOrClick)
+                    return _shownFromCornerSlideOrClick = true;
 
-                if (y > 0)
-                    is00 = false;
-            }
+            return false;
         }
 
 
 
-        private void ShowIfSlideFromRight(int x, int y)
+        private bool ShowIfSlideFromRight(int x, int y)
         {
-            if (x >= Screen.PrimaryScreen.WorkingArea.Width && y <= 0 && is0M == false)
-                is0M = true;
+            if (x >= Screen.PrimaryScreen.WorkingArea.Width && y <= 0 && is0MRC == false)
+                is0MRC = true;
 
-            if (is0M)
-            {
-                if (x <= Screen.PrimaryScreen.WorkingArea.Width * 0.85 && y <= 0)
-                {
-                    ShowDockWindow();
+            // With this, if Y axis is higher than 25 pixels before windows is shown
+            // Prevent the window show animation when x <= Screen.PrimaryScreen.WorkingArea.Width * 0.85 && !_shownFromCornerSlideOrClick
+            if (y > 25)
+                is0MRC = false;
 
-                    if (Options.Generals.UpdateAtShown)
-                        foreach (DriveUIControl item in DriveControlContainer.Children)
-                            item.GetSpaceInfo();
-                }
+            if (is0MRC)
+                if (x <= Screen.PrimaryScreen.WorkingArea.Width * 0.85 && !_shownFromCornerSlideOrClick)
+                    return _shownFromCornerSlideOrClick = true;
 
-                if (y > 0)
-                    is0M = false;
-            }
+            return false;
         }
 
 
@@ -161,6 +170,8 @@ namespace MyDrive
             {
                 if (Top == 0)
                 {
+                    _shownFromCornerSlideOrClick = false;
+
                     dblanim.From = 1;
                     dblanim.To = 0;
                     dblanim.Duration = TimeSpan.FromMilliseconds(100);
@@ -235,6 +246,8 @@ namespace MyDrive
             st.Show();
         }
 
+
+
         private void St_OnVisualChange(Base.ControlSettings settings)
         {
             if (settings is Base.VisualSettings visualSettings)
@@ -243,6 +256,8 @@ namespace MyDrive
                 PointWindowOnScreen();
             LoadEasyAccess();
         }
+        
+
 
         internal void EnableBlur()
         {
