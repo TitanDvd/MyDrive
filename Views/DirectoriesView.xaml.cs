@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MyDrive.Base;
 using static NetDrive.Base.Win32.User32;
+using System.Threading;
 
 namespace MyDrive.Views
 {
@@ -60,18 +61,34 @@ namespace MyDrive.Views
         }
 
 
+        private async Task<string[]> LoadAs(string _path)
+        {
+            return await Task.Factory.StartNew(() =>
+            {
+                return Directory.GetFileSystemEntries(_path);
+            });
+        }
+
+
 
         public void LoadFSEntriesUI(string _path)
         {
             navigationHistory.Add(_path);
             addressBar.Text = _path;
             ListContainer.Children.Clear();
+            
             var fUtil = new Base.FolderUtils();
             Dispatcher.BeginInvoke(new Action(async () =>
             {
                 try
                 {
-                    string[] entries = Directory.GetFileSystemEntries(_path);
+                    // If network cable is disconnected app may hang
+                    // Thats why the Task. Prevent app crash or hangs
+                    string[] entries = await Task.Factory.StartNew(() =>
+                    {
+                        return Directory.GetFileSystemEntries(_path);
+                    });
+
                     var dirs = entries.Where(s => Directory.Exists(s));
                     var files = entries.Where(s => File.Exists(s));
                     List<string> fsentries = new List<string>();

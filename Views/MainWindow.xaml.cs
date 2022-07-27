@@ -250,9 +250,8 @@ namespace MyDrive
         void PointWindowOnScreen()
         {
             Top = -Height;
-            var mid = Screen.PrimaryScreen.WorkingArea.Width * 0.5;
-            var left = mid - (Width / 2);
-            Left = left;
+            var mid = Screen.PrimaryScreen.WorkingArea.Width * 0.52;
+            Left = mid - (Width * 0.5);
         }
 
 
