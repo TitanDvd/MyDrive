@@ -12,6 +12,9 @@ namespace MyDrive.Base.Win32
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr SetWindowsHookEx(int idHook, Delegate lpfn, IntPtr hMod, uint dwThreadId);
 
+        [DllImport("kernel32.dll")]
+        public static extern Boolean CloseHandle(IntPtr handle);
+
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -28,6 +31,8 @@ namespace MyDrive.Base.Win32
         [DllImport("kernel32")]
         public static extern int GetDiskFreeSpaceEx(string lpDirectoryName, ref long lpFreeBytesAvailable, ref long lpTotalNumberOfBytes, ref long lpTotalNumberOfFreeBytes);
 
+
+
         public enum MouseMessages
         {
             WM_LBUTTONDOWN = 0x0201,
@@ -37,7 +42,17 @@ namespace MyDrive.Base.Win32
             WM_RBUTTONDOWN = 0x0204,
             WM_RBUTTONUP = 0x0205
         }
-        
+
+
+        [Flags]
+        public enum KBDLLHOOKSTRUCTFlags : uint
+        {
+            LLKHF_EXTENDED = 0x01,
+            LLKHF_INJECTED = 0x10,
+            LLKHF_ALTDOWN = 0x20,
+            LLKHF_UP = 0x80,
+        }
+
 
 
 
@@ -54,6 +69,17 @@ namespace MyDrive.Base.Win32
             public POINT pt;
             public uint mouseData, flags, time;
             public IntPtr dwExtraInfo;
+        }
+
+
+        [StructLayout(LayoutKind.Sequential)]
+        public class KBDLLHOOKSTRUCT
+        {
+            public uint vkCode;
+            public uint scanCode;
+            public KBDLLHOOKSTRUCTFlags flags;
+            public uint time;
+            public UIntPtr dwExtraInfo;
         }
     }
 }

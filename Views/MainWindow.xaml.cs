@@ -9,7 +9,8 @@ using System.Runtime.InteropServices;
 using NetDrive.Base;
 using System.Windows.Media.Animation;
 using static MyDrive.Base.AppSettings;
-
+using System.Windows.Input;
+using MyDrive.Base;
 
 namespace MyDrive
 {
@@ -23,32 +24,51 @@ namespace MyDrive
         /// Global Mouse Hook Helper using Kernel32 Interop
         /// </summary>
         public static MouseHook mHook;
-
+        public static KeyBoardHook kHook;
 
         private NotifyIcon _notifyIcon;
-        private DoubleAnimation dblanim;
+        private DoubleAnimation _dblanim;
         private Action<int,int> _mouseMove;
+        private Views.DirectoriesView _dirViews;
+
+
+        /// <summary>
+        /// The height o the directories windows.
+        /// </summary>
+        private int _leftLimit
+        {
+            get
+            {
+                if(_dirViews != null)
+                    return (int)_dirViews.Height;
+                return 0;
+            }
+        }
+
 
         /// <summary>
         /// Indicates that window has been shown for the very first time
         /// </summary>
         private bool _shown;
 
+
         /// <summary>
         /// Is mouse pointer in 0,0 (Left Top Corner)
         /// </summary>
         private bool is00LC;
+
 
         /// <summary>
         /// Is mouse pointer in 0,Maximum Screen Width (Right Top Corner) 
         /// </summary>
         private bool is0MRC;
 
+
         /// <summary>
         /// Indicate if form has been shown by user sliding pointer from corners or click interaction
         /// </summary>
         private bool _shownFromCornerSlideOrClick;
-
+        private bool _isCtrlPressed;
 
         public MainWindow()
         {
@@ -57,11 +77,12 @@ namespace MyDrive
             // Setted far from top
             Top = -300;
 
-            dblanim = new DoubleAnimation();
+            _dblanim = new DoubleAnimation();
             _notifyIcon = new NotifyIcon();
             _notifyIcon.Icon = new System.Drawing.Icon("images/NetDrive.ico");
             _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
             _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Opciones", null, new EventHandler(Settings)));
+           //  _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Ayuda", null, new EventHandler(Settings)));
             _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Salir", null, new EventHandler(CloseWindow)));
             _notifyIcon.Visible = true;
 
@@ -77,15 +98,34 @@ namespace MyDrive
                     HideWindowIfMouseLeft(y);
                 }
             });
-
+            
             Loaded += MainWindow_Loaded;
 
             mHook = new MouseHook();
             mHook.OnMouseMove += MHook_OnMouseMove;
             mHook.OnMouseClick += MHook_OnMouseClick;
             mHook.Hook();
+
+            kHook = new KeyBoardHook();
+            kHook.OnKeyPressed += KHook_OnKeyPressed;
+            kHook.OnKeyRealesed += KHook_OnKeyRealesed;
+            kHook.Hook();
         }
 
+
+
+        private void KHook_OnKeyRealesed(Keys key)
+        {
+            if (key == Keys.LControlKey || key == Keys.RControlKey)
+                _isCtrlPressed = false;
+        }
+
+
+        private void KHook_OnKeyPressed(Keys key)
+        {
+            if (key == Keys.LControlKey || key == Keys.RControlKey)
+                _isCtrlPressed = true;
+        }
 
         private void MHook_OnMouseClick(int x, int y)
         {
@@ -114,14 +154,14 @@ namespace MyDrive
 
             Activate();
 
-            dblanim.To = 0;
-            dblanim.Duration = TimeSpan.FromMilliseconds(300);
-            BeginAnimation(TopProperty, dblanim);
+            _dblanim.To = 0;
+            _dblanim.Duration = TimeSpan.FromMilliseconds(300);
+            BeginAnimation(TopProperty, _dblanim);
 
-            dblanim.From = 0;
-            dblanim.To = 1;
-            dblanim.Duration = TimeSpan.FromMilliseconds(100);
-            BeginAnimation(OpacityProperty, dblanim);
+            _dblanim.From = 0;
+            _dblanim.To = 1;
+            _dblanim.Duration = TimeSpan.FromMilliseconds(100);
+            BeginAnimation(OpacityProperty, _dblanim);
         }
 
 
@@ -166,20 +206,26 @@ namespace MyDrive
 
         private void HideWindowIfMouseLeft(int y)
         {
-            if (y >= Height + 100)
+            if (y >= Height + 30 + _leftLimit)
             {
                 if (Top == 0)
                 {
                     _shownFromCornerSlideOrClick = false;
 
-                    dblanim.From = 1;
-                    dblanim.To = 0;
-                    dblanim.Duration = TimeSpan.FromMilliseconds(100);
-                    BeginAnimation(OpacityProperty, dblanim);
+                    _dblanim.From = 1;
+                    _dblanim.To = 0;
+                    _dblanim.Duration = TimeSpan.FromMilliseconds(100);
+                    BeginAnimation(OpacityProperty, _dblanim);
 
-                    dblanim.To = -Height;
-                    dblanim.Duration = TimeSpan.FromMilliseconds(200);
-                    BeginAnimation(TopProperty, dblanim);
+                    _dblanim.To = -Height;
+                    _dblanim.Duration = TimeSpan.FromMilliseconds(200);
+                    BeginAnimation(TopProperty, _dblanim);
+
+                    if (_dirViews != null)
+                    {
+                        _dirViews.Close();
+                        _dirViews = null;
+                    }
                 }
 
             }
@@ -225,6 +271,40 @@ namespace MyDrive
             foreach (var d in Options.EasyAccessItems.AccessItems)
             {
                 var dui = new DriveUIControl(d);
+                dui.MouseDoubleClick += (s, e) =>
+                {
+                    if (_isCtrlPressed)
+                    {
+                        if (_dirViews != null)
+                        {
+                            _dirViews.Close();
+                            _dirViews = null;
+                        }
+                        System.Diagnostics.Process.Start(d.RootPath);
+                    }
+                };
+
+                dui.ControlClick += (o, e) =>
+                {
+                    if (!_isCtrlPressed)
+                    {
+                        if (_dirViews != null)
+                        {
+                            _dirViews.Close();
+                            _dirViews = null;
+                        }
+
+
+                        _dirViews = new Views.DirectoriesView
+                        {
+                            Top = Height + 10,
+                            Left = Left,
+                            Width = Width  
+                        };
+                        _dirViews.LoadFSEntriesUI(d.RootPath);
+                        _dirViews.Show();
+                    }
+                };
                 DriveControlContainer.Children.Add(dui);
             }
         }

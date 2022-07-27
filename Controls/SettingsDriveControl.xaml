@@ -34,6 +34,6 @@
             Foreground="#333"
             Content="Ruta del acceso directo facil" Height="16"/>
 
-        <Button Name="_deleteItem" Grid.RowSpan="2" Grid.Column="1" Content="Eliminar" Height="25" Width="60" Click="_deleteItem_Click"/>
+        <Button Name="_deleteItem" Grid.RowSpan="2" Grid.Column="1" Content="Delete" Height="25" Width="60" Click="_deleteItem_Click"/>
     </Grid>
 </UserControl>

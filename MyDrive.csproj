@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -44,6 +45,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -67,7 +69,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\DeviceControlUI.xaml">
+    <Page Include="Controls\SettingsDriveControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -75,11 +77,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\Settings.xaml">
+    <Page Include="Views\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\DirectoriesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -88,24 +94,30 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Base\ChromeStyle.cs" />
+    <Compile Include="Base\FolderUtils.cs" />
+    <Compile Include="Base\KeyBoardHook.cs" />
     <Compile Include="Base\MouseHook.cs" />
     <Compile Include="Base\Types\NetDriveType.cs" />
     <Compile Include="Base\Settings.cs" />
     <Compile Include="Base\Win32\Kernel32.cs" />
+    <Compile Include="Base\Win32\Shell32.cs" />
     <Compile Include="Base\Win32\User32.cs" />
     <Compile Include="Controls\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\DeviceControlUI.xaml.cs">
-      <DependentUpon>DeviceControlUI.xaml</DependentUpon>
+    <Compile Include="Controls\SettingsDriveControl.xaml.cs">
+      <DependentUpon>SettingsDriveControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\DriveUIControl.xaml.cs">
       <DependentUpon>DriveUIControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Settings.xaml.cs">
+    <Compile Include="Views\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Views\DirectoriesView.xaml.cs">
+      <DependentUpon>DirectoriesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -138,9 +150,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Resources\mydrive.png" />
   </ItemGroup>

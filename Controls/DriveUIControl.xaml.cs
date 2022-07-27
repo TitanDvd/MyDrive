@@ -27,6 +27,8 @@ namespace MyDrive.Controls
         private EasyAccessItem _ndt { get; set; }
         private DoubleAnimation dblanim;
         delegate void FillSpaceDiskInfoDelegate(long total, long freespace, long ocupated);
+        
+        public event EventHandler ControlClick;
 
 
         public DriveUIControl(EasyAccessItem ndt)
@@ -41,6 +43,7 @@ namespace MyDrive.Controls
             drive_Label.Foreground = new SolidColorBrush(Options.Visual.FontColor);
             Loaded += DriveUIControl_Loaded;
         }
+
 
         public DriveUIControl()
         {
@@ -130,9 +133,10 @@ namespace MyDrive.Controls
 
         }
 
-        private void UserControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+
+        private void UserControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            System.Diagnostics.Process.Start(_ndt.RootPath);
+           ControlClick?.Invoke(this, e);
         }
     }
 }

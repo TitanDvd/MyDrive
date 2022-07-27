@@ -11,11 +11,11 @@
         Title="MainWindow"
         ResizeMode="CanResize"
         SizeToContent="WidthAndHeight"
-        Background="#3F000000"
+        Background="#59000000"
         Topmost="True"
         ShowInTaskbar="False"
         AllowsTransparency="True"
         Padding="4">
-    <WrapPanel Width="Auto" Height="Auto" Name="DriveControlContainer" Margin="14" SnapsToDevicePixels="True"  />
+    <WrapPanel Width="Auto" Height="Auto" Name="DriveControlContainer" Margin="14" SnapsToDevicePixels="True"/>
 
 </Window>

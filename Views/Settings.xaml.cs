@@ -110,7 +110,7 @@ namespace MyDrive.Controls
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Options.SaveSettings(Options.Generals);
-            MessageBox.Show(this, "La configuracion se ha guardado correctamente", "MyDrive", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(this, "General settings has been saved!", "MyDrive", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -207,15 +207,13 @@ namespace MyDrive.Controls
 
             Color color = new Color
             {
-                A = 50,
+                A = 150,
                 B = colorD.Color.B,
                 G = colorD.Color.G,
                 R = colorD.Color.R
             };
 
             Options.Visual.TraslucentColor = color;
-            // Restore alpha in order to be shown properly
-            color.A = 255;
             _tranlucentWindowColor.Background = new SolidColorBrush(color);
         }
 
@@ -231,8 +229,6 @@ namespace MyDrive.Controls
                 G = colorD.Color.G,
                 R = colorD.Color.R
             };
-            //ColorPickerWPF.ColorPickerControl cp = new ColorPickerWPF.ColorPickerControl();
-            //ColorPickerWPF.ColorPickerWindow.ShowDialog(out color, ColorPickerWPF.Code.ColorPickerDialogOptions.SimpleView);
             Options.Visual.FontColor = color;
             _fontColor.Background = new SolidColorBrush(color);
         }
@@ -241,7 +237,7 @@ namespace MyDrive.Controls
         private void btn_saveVisualSettings_Click(object sender, RoutedEventArgs e)
         {
             Options.SaveSettings(Options.Visual);
-            MessageBox.Show(this, "La configuracion se ha guardado correctamente", "MyDrive", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(this, "Visual settings has been saved!", "MyDrive", MessageBoxButton.OK, MessageBoxImage.Information);
             OnVisualChange?.Invoke(Options.Visual);
         }
     }

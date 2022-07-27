@@ -12,8 +12,6 @@ using MyDrive.Base.Types;
 
 namespace MyDrive.Base
 {
-    
-
     public class GeneralSettings: ControlSettings
     {
         public bool StartAtOsBoot
@@ -110,10 +108,10 @@ namespace MyDrive.Base
                 Visual = new VisualSettings
                 {
                     FontColor = Color.FromRgb(255, 255, 255),
-                    FullSpaceBarColor = Color.FromRgb(255, 125, 55),
-                    GoodSpaceBarColor = Color.FromRgb(45, 120, 87),
-                    TraslucentColor = Color.FromRgb(55, 125, 255),
-                    WarningSpaceBarColor = Color.FromRgb(66, 87, 99)
+                    FullSpaceBarColor = (Color)ColorConverter.ConvertFromString("#FFFF3C3C"),
+                    GoodSpaceBarColor = (Color)ColorConverter.ConvertFromString("#FF297DBC"),
+                    TraslucentColor = (Color)ColorConverter.ConvertFromString("#96000000"),
+                    WarningSpaceBarColor = (Color)ColorConverter.ConvertFromString("#FFFF8040")
                 };
             }
             if (Generals == null)
@@ -123,7 +121,7 @@ namespace MyDrive.Base
                     ShowOnTopClick = false,
                     ShowOnTopMouseSlide = true,
                     StartAtOsBoot = false,
-                    UpdateAtShown = false
+                    UpdateAtShown = true
                 };
             }
             if (EasyAccessItems == null)
@@ -135,7 +133,7 @@ namespace MyDrive.Base
                         new EasyAccessItem
                         {
                             RootPath = @"C:\",
-                            Tag = "Disco Local C"
+                            Tag = "Local Drive C"
                         }
                     }
                 };
