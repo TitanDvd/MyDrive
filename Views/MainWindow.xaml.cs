@@ -81,9 +81,9 @@ namespace MyDrive
             _notifyIcon = new NotifyIcon();
             _notifyIcon.Icon = new System.Drawing.Icon("images/NetDrive.ico");
             _notifyIcon.ContextMenuStrip = new ContextMenuStrip();
-            _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Opciones", null, new EventHandler(Settings)));
+            _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Settings", null, new EventHandler(Settings)));
            //  _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Ayuda", null, new EventHandler(Settings)));
-            _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Salir", null, new EventHandler(CloseWindow)));
+            _notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Exit", null, new EventHandler(CloseWindow)));
             _notifyIcon.Visible = true;
 
             _mouseMove = new Action<int,int>((x,y) =>
